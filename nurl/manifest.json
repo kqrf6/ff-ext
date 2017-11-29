@@ -1,0 +1,36 @@
+{
+  "description": "Nurl",
+  "manifest_version": 2,
+  "name": "nurl",
+  "version": "0.1",
+
+  "page_action": {
+    "default_icon": "images/chillout-32.png",
+    "default_popup": "html/popup.html"
+  },
+
+
+  "background": {
+    "scripts": [
+      "javascripts/common.js",
+      "javascripts/background.js"
+    ]
+  },
+
+  "commands": {
+    "url-up": {
+      "suggested_key": {
+        "default": "Alt+Q"
+      },
+      "description": "Increment"
+    },
+    "url-down": {
+      "suggested_key": {
+        "default": "Alt+W"
+      },
+      "description": "Decrement"
+    }
+  },
+
+  "permissions": ["tabs"]
+}
