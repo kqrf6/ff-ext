@@ -1,6 +1,7 @@
 "use strict";
 
-var detectRegions = window.common.detectRegions;
+import common from './common.js';
+var detectRegions = common.detectRegions;
 
 class TabSettings {
   constructor(regionIndex, step, pad) {
@@ -10,8 +11,8 @@ class TabSettings {
   }
 
   stepUrl(url, direction) {
-    var regions = detectRegions(url);
-    return regions[this.regionIndex].step(direction * this.step, this.pad);
+    let regions = detectRegions(url);
+    return regions[this.regionIndex].step(url, direction * this.step, this.pad);
   }
 }
 
@@ -45,7 +46,7 @@ function getRange(url, index, step, pad, begin, end) {
   var i = begin;
   var urlList = [];
   while (i <= end) {
-    var url = region.newUrl(i, pad);
+    var url = region.newUrl(url, i, pad);
     urlList.push(url);
     i += step;
   }

@@ -14,37 +14,27 @@ if (typeof module != 'undefined') {
 console.log('common.js');
 
 class Region {
-  constructor(url,begin, length, value, step, zeroPad) {
+  constructor(begin, length) {
     this.begin = begin;
     this.length = length;
-    this.url_ = url;
-    this.value_ = value;
-  }
-
-  static forUrl(url, begin, text) {
-    return new Region(url, begin, text.length,
-      Number.parseInt(text), 1, text.startsWith('0'));
-  }
-
-  startsWithZero() {
-    return this.url_.substr(this.begin).startsWith('0');
   }
 
   toString () {
-    return `Region(${this.begin}, ${this.value_})`;
+    return `Region(${this.begin}, ${this.length})`;
   }
 
-  step(delta, pad) {
-    var newValue = this.value_ + delta;
+  step(url, delta, pad) {
+    let value = Number.parseInt(getRegionText(url, this));
+    let newValue = value + delta;
     if (newValue < 0) {
       newValue = 0;
     }
-    return this.newUrl(newValue, pad);
+    return this.newUrl(url, newValue, pad);
   }
 
-  newUrl(value, pad) {
-    var prefix = this.url_.substring(0, this.begin);
-    var suffix = this.url_.substr(this.begin + this.length);
+  newUrl(url, value, pad) {
+    let prefix = url.substring(0, this.begin);
+    let suffix = url.substr(this.begin + this.length);
     let valueText = '' + value;
     if (pad) {
       valueText = padStart(valueText, this.length, '0');
@@ -53,24 +43,30 @@ class Region {
   }
 }
 
+
+function getRegionText(url, region) {
+  return url.substr(region.begin, region.length);
+}
+
 const numberRe = /\d+/
 
 function detectRegions(url) {
-  var regions = []
-  var s = url;
-  var absIndex = 0;
+  let regions = []
+  let s = url;
+  let absIndex = 0;
   while (true) {
-    var m = s.match(numberRe);
+    let m = s.match(numberRe);
     if (!m) {
       return regions;
     }
-    regions.push(Region.forUrl(url, absIndex + m.index, m[0]));
+    regions.push(new Region(absIndex + m.index, m[0].length));
     absIndex += m.index + m[0].length;
     s = s.substr(m.index + m[0].length);
   }
   return regions;
 }
 
-window.common = {
-  detectRegions: detectRegions
+export default {
+  detectRegions: detectRegions,
+  getRegionText: getRegionText
 }

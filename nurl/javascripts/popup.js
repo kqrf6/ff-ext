@@ -1,14 +1,15 @@
 "use strict";
+import common  from './common.js';
+var detectRegions = common.detectRegions;
+var getRegionText = common.getRegionText;
 
-var detectRegions = window.common.detectRegions;
-
-var newHighlighted = (url, regions) => {
-  var index = 0
-  var lastRegionEnd = 0;
-  var result = ''
+function newHighlighted(url, regions) {
+  let index = 0
+  let lastRegionEnd = 0;
+  let result = ''
   for (let region of regions) {
     result += url.substring(lastRegionEnd, region.begin);
-    let text = url.substr(region.begin, region.length);
+    let text = getRegionText(url, region);
     result +=
       `<span class='region' id='url${index}'>` + text + '</span>';
     lastRegionEnd = region.begin + region.length;
@@ -18,24 +19,26 @@ var newHighlighted = (url, regions) => {
 }
 
 class RegionElement {
-  constructor(index, region, element) {
+  constructor(index, region, element, pad) {
     this.index = index;
     this.region = region;
     this.element = element;
+    this.pad = pad;
     this.step = 1;
-    this.pad = region.startsWithZero();
   }
   toString () {
     return `RegionElement(${this.index}, ${this.region})`;
   }
 }
 
-function getAllRegionElements(regions) {
-  var index = 0;
-  var elements = []
+function getAllRegionElements(url, regions) {
+  let index = 0;
+  let elements = []
   for (let region of regions) {
+    let pad = getRegionText(url, region).startsWith('0');
     elements.push(
-      new RegionElement(index, region, document.getElementById(`url${index}`)));
+      new RegionElement(index, region,
+        document.getElementById(`url${index}`), pad));
     ++index;
   }
   return elements;
@@ -126,7 +129,7 @@ function initialize(url) {
   var element = document.getElementById('src-url');
   var regions = detectRegions(url);
   element.innerHTML = newHighlighted(url, regions);
-  var regionElements = getAllRegionElements(regions);
+  let regionElements = getAllRegionElements(url, regions);
   for (let regionElement of regionElements) {
     regionElement.element.tabindex = regionElement.index;
     regionElement.element.onclick = function() {
