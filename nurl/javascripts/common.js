@@ -1,13 +1,24 @@
 "use strict";
 
+var padStart;
+
+if (typeof module != 'undefined') {
+  module.exports = { detectRegions: detectRegions };
+  padStart = require('pad-start');
+} else {
+  padStart = function (s, length, pad) {
+    return s.padStart(length, pad);
+  }
+}
+
 console.log('common.js');
 
 class Region {
   constructor(url,begin, length, value, step, zeroPad) {
-    this.url = url;
     this.begin = begin;
     this.length = length;
-    this.value = value;
+    this.url_ = url;
+    this.value_ = value;
   }
 
   static forUrl(url, begin, text) {
@@ -16,15 +27,15 @@ class Region {
   }
 
   startsWithZero() {
-    return this.url.substr(this.begin).startsWith('0');
+    return this.url_.substr(this.begin).startsWith('0');
   }
 
   toString () {
-    return `Region(${this.begin}, ${this.value})`;
+    return `Region(${this.begin}, ${this.value_})`;
   }
 
   step(delta, pad) {
-    var newValue = this.value + delta;
+    var newValue = this.value_ + delta;
     if (newValue < 0) {
       newValue = 0;
     }
@@ -32,11 +43,11 @@ class Region {
   }
 
   newUrl(value, pad) {
-    var prefix = this.url.substring(0, this.begin);
-    var suffix = this.url.substr(this.begin + this.length);
-    var valueText = '' + value;
+    var prefix = this.url_.substring(0, this.begin);
+    var suffix = this.url_.substr(this.begin + this.length);
+    let valueText = '' + value;
     if (pad) {
-      valueText = valueText.padStart(this.length, '0');
+      valueText = padStart(valueText, this.length, '0');
     }
     return prefix + valueText + suffix;
   }
@@ -62,8 +73,4 @@ function detectRegions(url) {
 
 window.common = {
   detectRegions: detectRegions
-}
-
-if (typeof module != 'undefined') {
-  module.exports = { detectRegions: detectRegions };
 }

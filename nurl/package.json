@@ -3,5 +3,11 @@
   "version": "1.0.0",
   "devDependencies": {
     "jest": "^21.2.1"
+  },
+  "scripts": {
+     "test": "jest"
+  },
+  "jest": {
+    "browser": true
   }
 }
