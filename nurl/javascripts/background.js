@@ -54,7 +54,7 @@ function getRange(url, index, step, pad, begin, end) {
   console.log('creating range of size' + urlList.length);
   browser.tabs.create({url:'/html/range.html'})
     .then((tab) => {
-      browser.tabs.executeScript(tab.id, {file: '/javascripts/range.js'})
+      browser.tabs.executeScript(tab.id, {file: '/javascripts/range.bundle.js'})
         .then((result) => {
             browser.tabs.sendMessage(tab.id, {
               url: url,
@@ -74,11 +74,13 @@ function getRangeUsingSpec(spec) {
   console.log('creating range of size' + urlList.length);
   browser.tabs.create({url:'/html/range.html'})
     .then((tab) => {
-      browser.tabs.executeScript(tab.id, {file: '/javascripts/range.js'})
+      browser.tabs.executeScript(tab.id, {file: '/javascripts/range.bundle.js'})
         .then((result) => {
             browser.tabs.sendMessage(tab.id, {
-              title: spec,
-              urlList: urlList
+              title: common.getUrlRangeSpecTitle(spec),
+              urlList: urlList,
+              url: urlList[0],
+              spec: spec
             });
           });
         });

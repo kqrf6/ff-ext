@@ -73,3 +73,15 @@ test('expand ranges', () => {
     'http://a.c.c/a10/14c',
   ]);
 });
+
+test('getRageSpecTitle stops at the range longer than 1', () => {
+  let url = 'http://a.c.c/a{08-08:1}/x{01-02:1}c';
+  let result = common.getUrlRangeSpecTitle(url);
+  expect(result).toBe('http://a.c.c/a08/x');
+});
+
+test('nextUrlRangeSpec', () => {
+  let spec = 'http://a.c.c/a{08-10:1}/x{01-02:2}c';
+  let result = common.nextUrlRangeSpec(spec, 5);
+  expect(result).toBe('http://a.c.c/a{08-10:1}/x{03-08:2}c');
+});

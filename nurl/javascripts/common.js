@@ -12,6 +12,10 @@ if (typeof module != 'undefined') {
   }
 }
 
+function zeroPad(s, l) {
+  return padStart('' + s, l, '0');
+}
+
 console.log('common.js');
 
 class Region {
@@ -38,7 +42,7 @@ class Region {
     let suffix = url.substr(this.begin + this.length);
     let valueText = '' + value;
     if (pad) {
-      valueText = padStart(valueText, this.length, '0');
+      valueText = zeroPad(valueText, this.length);
     }
     return prefix + valueText + suffix;
   }
@@ -93,7 +97,7 @@ function getUrlRangeSpec(url, lastRangeLength) {
     let endText = text;
     if (index == regionCount - 1 && lastRangeLength != null) {
       let endValue = Number.parseInt(text) + lastRangeLength;
-      endText = padStart('' + endValue, text.length, '0');
+      endText = zeroPad(endValue, text.length);
     }
     return `{${text}-${endText}:1}`;
   });
@@ -143,7 +147,7 @@ function expandRange(collector, prefix, rangeIndex, ranges) {
   let range = ranges[rangeIndex];
   let currentValue = null;
   while ((currentValue = nextRangeValue(range, currentValue)) != null) {
-    let current = padStart('' + currentValue, range.maxPadLength, '0');
+    let current = zeroPad(currentValue, range.maxPadLength);
     let newPrefix = prefix + current + range.suffix;
     if (rangeIndex + 1 == ranges.length) {
       collector.push(newPrefix);
@@ -164,11 +168,49 @@ function expandUrlRangeSpec(spec) {
   return urls;
 }
 
+function getUrlRangeSpecTitle(spec) {
+  let ranges = getRangesFromUrlRangeSpec(spec);
+  let text;
+  if (ranges.length == 0) {
+    text = spec;
+  } else {
+    text = spec.substring(0, ranges[0].specPos);
+    for (let range of ranges) {
+      if (range.begin != range.end) {
+        break;
+      }
+      text += zeroPad(range.begin, range.maxPadLength) + range.suffix;
+    }
+  }
+  return text;
+}
+
+function getRangeSpecText(spec) {
+  let begin = zeroPad(spec.begin, spec.maxPadLength);
+  let end = zeroPad(spec.end, spec.maxPadLength);
+  return `{${begin}-${end}:${spec.step}}`;
+}
+
+function nextUrlRangeSpec(spec, length){
+  let ranges = getRangesFromUrlRangeSpec(spec);
+  if (ranges.length == 0) {
+    return spec;
+  }
+  let lastRange = ranges[ranges.length - 1];
+  lastRange.begin = lastRange.end + 1;
+  lastRange.end = lastRange.begin + length;
+  let text = spec.substring(0, lastRange.specPos);
+  text += getRangeSpecText(lastRange) + lastRange.suffix;
+  return text;
+}
+
 export default {
   detectRegions: detectRegions,
   getRegionText: getRegionText,
   rangeName: rangeName,
   replaceRegionsInUrl: replaceRegionsInUrl,
   getUrlRangeSpec: getUrlRangeSpec,
-  expandUrlRangeSpec: expandUrlRangeSpec
+  getUrlRangeSpecTitle: getUrlRangeSpecTitle,
+  expandUrlRangeSpec: expandUrlRangeSpec,
+  nextUrlRangeSpec: nextUrlRangeSpec
 }

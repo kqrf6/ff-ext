@@ -1,6 +1,14 @@
 import resolve from 'rollup-plugin-node-resolve';
 
 export default [{
+  input: 'javascripts/background.js',
+  output: {
+    file: 'javascripts/background.bundle.js',
+    format: 'cjs'
+  },
+  plugins: [ resolve() ]
+},
+{
   input: 'javascripts/popup.js',
   output: {
     file: 'javascripts/popup.bundle.js',
@@ -9,11 +17,10 @@ export default [{
   plugins: [ resolve() ]
 },
 {
-  input: 'javascripts/background.js',
+  input: 'javascripts/range.js',
   output: {
-    file: 'javascripts/background.bundle.js',
+    file: 'javascripts/range.bundle.js',
     format: 'cjs'
   },
   plugins: [ resolve() ]
-}
-];
+}];
