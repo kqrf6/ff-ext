@@ -55,7 +55,8 @@ test('getUrlRangeSpec', () => {
 });
 
 test('expand ranges', () => {
-  let result = common.getUrls('http://a.c.c/a{08-10:1}/{12-14:2}c');
+  let result = common.expandUrlRangeSpec(
+    'http://a.c.c/a{08-10:1}/{12-14:2}c');
   expect(result).toEqual([
     'http://a.c.c/a08/12c',
     'http://a.c.c/a08/14c',

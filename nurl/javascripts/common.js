@@ -98,25 +98,27 @@ function getRangesFromUrlRangeSpec(spec) {
   const rangeRe = /{(\d+)-(\d+):(\d+)}/g;
   let ranges = [];
   let prevRange = null;
+  let prevRangeSpecLength = null;
   let result;
   while ((result = rangeRe.exec(spec)) !== null) {
     let newRange = {
-      begin: result[1],
+      begin: Number.parseInt(result[1]),
       end: Number.parseInt(result[2]),
       step: Number.parseInt(result[3]),
-      specPos: result.index,
-      specLength: result[0].length
+      maxPadLength: result[1].length,
+      specPos: result.index
     };
     if (prevRange != null) {
       prevRange.suffix = spec.substring(
-        prevRange.specPos + prevRange.specLength, newRange.specPos);
+        prevRange.specPos + prevRangeSpecLength, newRange.specPos);
     }
     ranges.push(newRange);
     prevRange = newRange;
+    prevRangeSpecLength = result[0].length;
   }
   if (prevRange != null) {
     prevRange.suffix = spec.substring(
-      prevRange.specPos + prevRange.specLength);
+      prevRange.specPos + prevRangeSpecLength);
   }
   return ranges;
 }
@@ -125,17 +127,18 @@ function nextRangeValue(range, current) {
   if (current == null) {
     return range.begin;
   }
-  let nextValue = Number.parseInt(current) + range.step;
+  let nextValue = current + range.step;
   if (nextValue > range.end) {
     return null;
   }
-  return padStart('' + nextValue, range.begin.length, '0');
+  return nextValue;
 }
 
 function expandRange(collector, prefix, rangeIndex, ranges) {
   let range = ranges[rangeIndex];
-  let current = null
-  while ((current = nextRangeValue(range, current)) != null) {
+  let currentValue = null;
+  while ((currentValue = nextRangeValue(range, currentValue)) != null) {
+    let current = padStart('' + currentValue, range.maxPadLength, '0');
     let newPrefix = prefix + current + range.suffix;
     if (rangeIndex + 1 == ranges.length) {
       collector.push(newPrefix);
@@ -145,7 +148,7 @@ function expandRange(collector, prefix, rangeIndex, ranges) {
   }
 }
 
-function getUrls(spec) {
+function expandUrlRangeSpec(spec) {
   let ranges = getRangesFromUrlRangeSpec(spec);
   if (ranges.length == 0) {
     return [spec];
@@ -162,5 +165,5 @@ export default {
   rangeName: rangeName,
   replaceRegionsInUrl: replaceRegionsInUrl,
   getUrlRangeSpec: getUrlRangeSpec,
-  getUrls: getUrls
+  expandUrlRangeSpec: expandUrlRangeSpec
 }
