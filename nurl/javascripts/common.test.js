@@ -1,4 +1,4 @@
-const common = require('./common');
+import common from './common.js';
 
 test('detects regions', () => {
   let url = 'http://a.c.c/1/a02/12c';

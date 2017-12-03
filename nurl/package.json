@@ -2,12 +2,21 @@
   "name": "nurl",
   "version": "1.0.0",
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-jest": "^21.2.0",
+    "babel-preset-env": "^1.6.1",
     "jest": "^21.2.1",
     "rollup": "^0.52.0",
     "rollup-plugin-json": "^2.3.0",
     "rollup-plugin-node-resolve": "^3.0.0"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "rollup -c"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    }
   }
 }

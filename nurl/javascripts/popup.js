@@ -1,5 +1,5 @@
 "use strict";
-import common  from './common.js';
+import common from './common.js';
 var detectRegions = common.detectRegions;
 var getRegionText = common.getRegionText;
 
