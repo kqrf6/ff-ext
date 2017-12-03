@@ -3,7 +3,8 @@
 var padStart;
 
 if (typeof module != 'undefined') {
-  module.exports = { detectRegions: detectRegions };
+  // Running under node.js (tests) which does not
+  // have the String.padStart method.
   padStart = require('pad-start');
 } else {
   padStart = function (s, length, pad) {
@@ -66,7 +67,14 @@ function detectRegions(url) {
   return regions;
 }
 
+function rangeName(url, region) {
+  let t = url.substr(0, region.begin - 1);
+  t = t.replace('://', '-');
+  return t.replace(/\/+/g, '_');
+}
+
 export default {
   detectRegions: detectRegions,
-  getRegionText: getRegionText
+  getRegionText: getRegionText,
+  rangeName: rangeName
 }

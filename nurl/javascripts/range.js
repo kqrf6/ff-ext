@@ -6,7 +6,9 @@ function handleMessage(request, sender, sendResponse) {
   console.log(request);
   console.log(sender);
   console.log(sendResponse);
-  // var rangeElement =document.getElementById('range');
+  document.title = request.title;
+  let urlElement = document.getElementById('url');
+  urlElement.href = request.url;
   for (let url of request.urlList) {
     var img = new Image();
     img.src = url;

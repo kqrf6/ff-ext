@@ -1,5 +1,6 @@
 "use strict";
 import common from './common.js';
+
 var detectRegions = common.detectRegions;
 var getRegionText = common.getRegionText;
 
@@ -96,12 +97,13 @@ function sendSetRegionMessage(tabId) {
   });
 }
 
-function okButtonHandler() {
+function loadWithDelta(delta) {
   browser.tabs.query({active: true, currentWindow: true})
     .then((tabs) => {
       sendSetRegionMessage(tabs[0].id);
       browser.runtime.sendMessage({
-        command: 'increment'
+        command: 'load-with-delta',
+        delta: delta
       });
     });
 }
@@ -146,13 +148,13 @@ function initialize(url) {
   var rightMostRegionElement = regionElements[regionElements.length - 1];
   selectRegion(rightMostRegionElement, regionElements);
 
-  var okButton = document.getElementById('ok');
-  okButton.onclick = okButtonHandler;
+  var loadNextButton = document.getElementById('load-next');
+  loadNextButton.onclick = () => { loadWithDelta(1); };
+  var loadPrevButton = document.getElementById('load-prev');
+  loadPrevButton.onclick = () => { loadWithDelta(-1); };
 
   var rangeGetButton = document.getElementById('range-get');
-  rangeGetButton.onclick = function () {
-    rangeGetButtonHandler(url);
-  }
+  rangeGetButton.onclick = () => { rangeGetButtonHandler(url); };
 }
 
 browser.tabs.query({active:true, currentWindow:true})

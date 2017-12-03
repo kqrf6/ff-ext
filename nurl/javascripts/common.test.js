@@ -31,3 +31,11 @@ test('step without padding', () => {
   let secondRegion = regionList[1];
   expect(secondRegion.step(url, -3, false)).toBe('http://a.c.c/a02/9c');
 });
+
+test('rangeName', () => {
+  let url = 'http://a.c.c/a02/12c';
+  let regionList = common.detectRegions(url);
+  expect(regionList.length).toBe(2);
+  let secondRegion = regionList[1];
+  expect(common.rangeName(url, secondRegion)).toBe('http-a.c.c_a02');
+});

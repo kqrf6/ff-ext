@@ -23,13 +23,12 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tabInfo) => {
 var tabSettingsMap = {};
 
 function handleMessage(message) {
-  console.log('messsage command:' + message.command);
+  console.log('messsage:', message);
   if (message.command == 'set-region') {
     tabSettingsMap[message.tabId] =
     new TabSettings(message.index, message.step, message.pad);
-  } else if (message.command == 'increment') {
-    console.log('increment');
-    updateActiveTabUrl(1);
+  } else if (message.command == 'load-with-delta') {
+    updateActiveTabUrl(message.delta);
   } else if (message.command == 'get-range') {
     getRange(
       message.url, message.index,
@@ -46,16 +45,20 @@ function getRange(url, index, step, pad, begin, end) {
   var i = begin;
   var urlList = [];
   while (i <= end) {
-    var url = region.newUrl(url, i, pad);
-    urlList.push(url);
+    urlList.push(region.newUrl(url, i, pad));
     i += step;
   }
+  let title = common.rangeName(url, region);
   console.log('creating range of size' + urlList.length);
   browser.tabs.create({url:'/html/range.html'})
     .then((tab) => {
       browser.tabs.executeScript(tab.id, {file: '/javascripts/range.js'})
         .then((result) => {
-            browser.tabs.sendMessage(tab.id, {url: url, urlList: urlList});
+            browser.tabs.sendMessage(tab.id, {
+              url: url,
+              title: title,
+              urlList: urlList
+            });
           });
         });
 }
