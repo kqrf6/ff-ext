@@ -4,19 +4,10 @@ import common from './common.js';
 var detectRegions = common.detectRegions;
 var getRegionText = common.getRegionText;
 
-function newHighlighted(url, regions) {
-  let index = 0
-  let lastRegionEnd = 0;
-  let result = ''
-  for (let region of regions) {
-    result += url.substring(lastRegionEnd, region.begin);
-    let text = getRegionText(url, region);
-    result +=
-      `<span class='region' id='url${index}'>` + text + '</span>';
-    lastRegionEnd = region.begin + region.length;
-    index += 1;
-  }
-  return result + url.substr(lastRegionEnd);
+function newHighlighted(url) {
+  return common.replaceRegionsInUrl(url, (index, region, text) => {
+    return `<span class='region' id='url${index}'>` + text + '</span>';
+  });
 }
 
 class RegionElement {

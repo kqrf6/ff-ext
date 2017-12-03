@@ -73,8 +73,94 @@ function rangeName(url, region) {
   return t.replace(/\/+/g, '_');
 }
 
+function replaceRegionsInUrl(url, replacementFn) {
+  let regions = detectRegions(url);
+  let index = 0
+  let lastRegionEnd = 0;
+  let result = ''
+  for (let region of regions) {
+    result += url.substring(lastRegionEnd, region.begin);
+    let text = getRegionText(url, region);
+    result += replacementFn(index, region, text);
+    lastRegionEnd = region.begin + region.length;
+    index += 1;
+  }
+  return result + url.substr(lastRegionEnd);
+}
+
+function getUrlRangeSpec(url) {
+  return replaceRegionsInUrl(url, (index, region, text) => {
+    return `{${text}-${text}:1}`;
+  });
+}
+
+function getRangesFromUrlRangeSpec(spec) {
+  const rangeRe = /{(\d+)-(\d+):(\d+)}/g;
+  let ranges = [];
+  let prevRange = null;
+  let result;
+  while ((result = rangeRe.exec(spec)) !== null) {
+    let newRange = {
+      begin: result[1],
+      end: Number.parseInt(result[2]),
+      step: Number.parseInt(result[3]),
+      specPos: result.index,
+      specLength: result[0].length
+    };
+    if (prevRange != null) {
+      prevRange.suffix = spec.substring(
+        prevRange.specPos + prevRange.specLength, newRange.specPos);
+    }
+    ranges.push(newRange);
+    prevRange = newRange;
+  }
+  if (prevRange != null) {
+    prevRange.suffix = spec.substring(
+      prevRange.specPos + prevRange.specLength);
+  }
+  return ranges;
+}
+
+function nextRangeValue(range, current) {
+  if (current == null) {
+    return range.begin;
+  }
+  let nextValue = Number.parseInt(current) + range.step;
+  if (nextValue > range.end) {
+    return null;
+  }
+  return padStart('' + nextValue, range.begin.length, '0');
+}
+
+function expandRange(collector, prefix, rangeIndex, ranges) {
+  let range = ranges[rangeIndex];
+  let current = null
+  while ((current = nextRangeValue(range, current)) != null) {
+    let newPrefix = prefix + current + range.suffix;
+    if (rangeIndex + 1 == ranges.length) {
+      collector.push(newPrefix);
+    } else {
+      expandRange(collector, newPrefix, rangeIndex + 1, ranges);
+    }
+  }
+}
+
+function getUrls(spec) {
+  let ranges = getRangesFromUrlRangeSpec(spec);
+  if (ranges.length == 0) {
+    return [spec];
+  }
+  let prefix = spec.substring(0, ranges[0].specPos);
+  let urls = [];
+  expandRange(urls, prefix, 0, ranges);
+  return urls;
+}
+
 export default {
   detectRegions: detectRegions,
   getRegionText: getRegionText,
-  rangeName: rangeName
+  rangeName: rangeName,
+  replaceRegionsInUrl: replaceRegionsInUrl,
+  getUrlRangeSpec: getUrlRangeSpec,
+  getUrls: getUrls
 }

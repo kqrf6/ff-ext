@@ -39,3 +39,29 @@ test('rangeName', () => {
   let secondRegion = regionList[1];
   expect(common.rangeName(url, secondRegion)).toBe('http-a.c.c_a02');
 });
+
+test('replaceRegionsInUrl', () => {
+  let url = 'http://a.c.c/a02/12c';
+  let result = common.replaceRegionsInUrl(url, (index, region, text) => {
+    return `<span id='url${index}'>` + text + '</span>'
+  });
+  expect(result).toBe("http://a.c.c/a<span id='url0'>02</span>/<span id='url1'>12</span>c");
+});
+
+test('getUrlRangeSpec', () => {
+  let url = 'http://a.c.c/a02/12c';
+  let result = common.getUrlRangeSpec(url);
+  expect(result).toBe("http://a.c.c/a{02-02:1}/{12-12:1}c");
+});
+
+test('expand ranges', () => {
+  let result = common.getUrls('http://a.c.c/a{08-10:1}/{12-14:2}c');
+  expect(result).toEqual([
+    'http://a.c.c/a08/12c',
+    'http://a.c.c/a08/14c',
+    'http://a.c.c/a09/12c',
+    'http://a.c.c/a09/14c',
+    'http://a.c.c/a10/12c',
+    'http://a.c.c/a10/14c',
+  ]);
+});
