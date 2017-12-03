@@ -3,17 +3,23 @@
 <body>
   <div>
     URL: <span id="src-url"></span>
-    <input id="load-next" type="button" value="Next"/>
+    <div id="input">
+      Step: <input id="step" value="1"/>
+      Zero pad: <input type="checkbox" id="pad"/>
+    </div>
     <input id="load-prev" type="button" value="Prev"/>
+    <input id="load-next" type="button" value="Next"/>
   </div>
-  <div id="input">
-    Step: <input id="step" value="1"/>
-    Zero pad: <input type="checkbox" id="pad"/>
-  </div>
+  <hr/>
   <div id="range">
     From: <input id="range-begin" value="1"/>
     count: <input id="range-length" value="20"/>
     <input id="range-get" type="button" value="Get"/>
+  </div>
+  <hr/>
+  <div id="range-spec-section">
+    Range: <input id="url-range-spec" value=""/>
+    <input id="url-range-spec-get" type="button" value="Get"/>
   </div>
 </body>
 <script src="../javascripts/popup.bundle.js"></script>

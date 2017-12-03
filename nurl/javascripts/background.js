@@ -34,6 +34,8 @@ function handleMessage(message) {
       message.url, message.index,
       message.step, message.pad,
       message.begin, message.end);
+  } else if (message.command == 'get-range-using-spec') {
+    getRangeUsingSpec(message.spec);
   }
 }
 
@@ -62,6 +64,26 @@ function getRange(url, index, step, pad, begin, end) {
           });
         });
 }
+
+function getRangeUsingSpec(spec) {
+  let urlList = common.expandUrlRangeSpec(spec);
+  if (urlList.length == 0) {
+    console.log('No urls for ' + spec);
+    return;
+  }
+  console.log('creating range of size' + urlList.length);
+  browser.tabs.create({url:'/html/range.html'})
+    .then((tab) => {
+      browser.tabs.executeScript(tab.id, {file: '/javascripts/range.js'})
+        .then((result) => {
+            browser.tabs.sendMessage(tab.id, {
+              title: spec,
+              urlList: urlList
+            });
+          });
+        });
+}
+
 
 function updateActiveTabUrl(dir) {
   browser.tabs.query({active: true, currentWindow: true})

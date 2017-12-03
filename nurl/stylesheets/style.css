@@ -15,3 +15,9 @@ a {
 .selected-region {
   border: 1px solid red;
 }
+
+input#url-range-spec  {
+  background-color: yellow;
+  border: 1px solid green;
+  width: 100%;
+}

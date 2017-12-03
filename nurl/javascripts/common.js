@@ -81,16 +81,21 @@ function replaceRegionsInUrl(url, replacementFn) {
   for (let region of regions) {
     result += url.substring(lastRegionEnd, region.begin);
     let text = getRegionText(url, region);
-    result += replacementFn(index, region, text);
+    result += replacementFn(index, region, text, regions.length);
     lastRegionEnd = region.begin + region.length;
     index += 1;
   }
   return result + url.substr(lastRegionEnd);
 }
 
-function getUrlRangeSpec(url) {
-  return replaceRegionsInUrl(url, (index, region, text) => {
-    return `{${text}-${text}:1}`;
+function getUrlRangeSpec(url, lastRangeLength) {
+  return replaceRegionsInUrl(url, (index, region, text, regionCount) => {
+    let endText = text;
+    if (index == regionCount - 1 && lastRangeLength != null) {
+      let endValue = Number.parseInt(text) + lastRangeLength;
+      endText = padStart('' + endValue, text.length, '0');
+    }
+    return `{${text}-${endText}:1}`;
   });
 }
 

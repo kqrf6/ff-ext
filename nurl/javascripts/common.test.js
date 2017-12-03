@@ -54,6 +54,13 @@ test('getUrlRangeSpec', () => {
   expect(result).toBe("http://a.c.c/a{02-02:1}/{12-12:1}c");
 });
 
+test('getUrlRangeSpec with last region end', () => {
+  let url = 'http://a.c.c/a02/002c';
+  let result = common.getUrlRangeSpec(url, 20);
+  expect(result).toBe("http://a.c.c/a{02-02:1}/{002-022:1}c");
+});
+
+
 test('expand ranges', () => {
   let result = common.expandUrlRangeSpec(
     'http://a.c.c/a{08-10:1}/{12-14:2}c');

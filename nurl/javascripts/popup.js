@@ -117,6 +117,14 @@ function rangeGetButtonHandler(url) {
   });
 }
 
+function urlRangeSpecGetButtonHandler() {
+  let urlRangeSpecInput = document.getElementById('url-range-spec');
+  browser.runtime.sendMessage({
+    command: 'get-range-using-spec',
+    spec: urlRangeSpecInput.value
+  });
+}
+
 function initialize(url) {
   console.log("Initializing...");
   var element = document.getElementById('src-url');
@@ -146,6 +154,12 @@ function initialize(url) {
 
   var rangeGetButton = document.getElementById('range-get');
   rangeGetButton.onclick = () => { rangeGetButtonHandler(url); };
+
+  // URL Range Spec Section
+  let urlRangeSpecInput = document.getElementById('url-range-spec');
+  urlRangeSpecInput.value = common.getUrlRangeSpec(url, 20);
+  let urlRangeSpecGetButton = document.getElementById('url-range-spec-get');
+  urlRangeSpecGetButton.onclick = urlRangeSpecGetButtonHandler;
 }
 
 browser.tabs.query({active:true, currentWindow:true})
