@@ -8,15 +8,22 @@
     "jest": "^21.2.1",
     "rollup": "^0.52.0",
     "rollup-plugin-json": "^2.3.0",
-    "rollup-plugin-node-resolve": "^3.0.0"
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "standard": "^10.0.3"
   },
   "scripts": {
     "test": "jest",
-    "build": "rollup -c"
+    "build": "npm run format && npm run test && rollup -c",
+    "format": "standard --fix"
   },
   "jest": {
     "transform": {
       "^.+\\.jsx?$": "babel-jest"
     }
+  },
+  "standard": {
+    "ignore": [
+      "*.bundle.js"
+    ]
   }
 }

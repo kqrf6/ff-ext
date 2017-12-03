@@ -1,4 +1,4 @@
-import resolve from 'rollup-plugin-node-resolve';
+import resolve from 'rollup-plugin-node-resolve'
 
 export default [{
   input: 'javascripts/background.js',
@@ -23,4 +23,4 @@ export default [{
     format: 'cjs'
   },
   plugins: [ resolve() ]
-}];
+}]
